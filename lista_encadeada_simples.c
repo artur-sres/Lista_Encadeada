@@ -6,10 +6,12 @@
 typedef struct NO{
     int valor;
     struct NO* prox;
+    struct NO* ant;
 }NO;
 
-//Criacao da variavel de inicio, tamanho
+//Criacao da variavel de inicio, final e tamanho
 NO* inicio=NULL;
+NO* final=NULL;
 int tamanho=0;
 
 //Funcao para adicionar
@@ -23,29 +25,42 @@ void add(int valor, int posicao){
         if(inicio==NULL){ 
             //lista vazia
             inicio = novo;
+            final = novo;
         
         }else if(posicao==0){
             //lista nao vazia e eu quero adicionar no inicio
             novo->prox=inicio;
+            novo->prox->ant=novo;
             inicio=novo;
 
         }else if(posicao==tamanho){
             //lista nao vazia e eu quero adicionar no final
-            NO* aux=inicio;
-            for(int i=0;i<tamanho-1;i++){
-                aux=aux->prox;
-            }
-            aux->prox=novo;
+            novo->ant=final;
+            final->prox=novo;
+            final=novo;
         
         }else{
             //lista nao vazia e eu quero adicionar em outra posicao
-            NO* aux1=inicio;
-            for(int i=0;i!=posicao-1;i++){
-                aux1=aux1->prox;
+            if(posicao<(tamanho/2)){
+                NO* aux = inicio;
+                for(int i=0; i<posicao-1; i++){
+                    aux=aux->prox;
+                }
+                novo->prox=aux->prox;
+                novo->ant=aux;
+                novo->prox->ant=novo;
+                aux->prox=novo;
+
+            }else{
+                NO* aux = final;
+                for(int i=tamanho-1; i>posicao-1; i--){
+                    aux=aux->ant;
+                }
+                novo->prox=aux->prox;
+                novo->ant=aux;
+                novo->prox->ant=novo;
+                aux->prox=novo;
             }
-            NO* aux2=aux1->prox;
-            aux1->prox=novo;
-            novo->prox=aux2;    
         }
     tamanho++;
     }else{
@@ -56,22 +71,44 @@ void add(int valor, int posicao){
 //Funcao para remover
 void remover(int posicao){
     if(posicao>=0&&posicao<tamanho){
-        NO* lixo=NULL;
+        NO* lixo;
         
         //Casos de remocao:
         if(posicao==0){
             //remover do inicio
             lixo=inicio;
             inicio=lixo->prox;
-            
-        }else{
-            //remover de outra posicao
-            NO* aux1=inicio;
-            for(int i=0;i<posicao-1;i++){
-                aux1=aux1->prox;
+            if(inicio!=NULL){
+                inicio->ant=NULL;
+            }else{
+                final=NULL;
             }
-            lixo=aux1->prox;
-            aux1->prox=lixo->prox;
+
+        }else{
+            if(posicao<(tamanho/2)){
+                lixo = inicio;
+                for(int i=0; i<posicao; i++){
+                    lixo=lixo->prox;
+                }
+                lixo->ant->prox=lixo->prox;
+                if(lixo->prox!=NULL){
+                lixo->prox->ant=lixo->ant;
+                }else{
+                    final=lixo->ant;
+                }
+
+            }else{
+                lixo = final;
+                for(int i=tamanho-1; i>posicao; i--){
+                    lixo=lixo->ant;
+                }     
+                lixo->ant->prox=lixo->prox;
+                if(lixo->prox!=NULL){
+                    lixo->prox->ant=lixo->ant;
+                }else{
+                    final=lixo->ant;
+                }
+            }
         }        
         free(lixo);
         tamanho--;
@@ -83,18 +120,26 @@ void remover(int posicao){
 //Funcao para editar
 void editar(int posicao, int valor){
     if(posicao>=0&&posicao<tamanho){
-        NO* aux=inicio;
-        for(int i=0;i<posicao;i++){
-            aux=aux->prox;
+        if(posicao<(tamanho/2)){
+            NO* aux = inicio;
+            for(int i=0; i<posicao; i++){
+                aux=aux->prox;
+            }
+            aux->valor=valor;
+        }else{
+            NO* aux = final;
+            for(int i=tamanho-1; i>posicao; i--){
+                aux=aux->ant;
+            }
+            aux->valor=valor;
         }
-        aux->valor=valor;
     }else{
         printf("Edicao incorreta. Posicao invalida!\n");
     }
 }
 
 //Funcao para imprimir
-void imprimir(){
+void imprimir(char *ordem){
     if(tamanho>0){
         printf("========== Valores do NO ==========\n");
         NO* aux=inicio;

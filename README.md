@@ -35,4 +35,10 @@ Este projeto implementa uma **lista simplesmente encadeada**, permitindo realiza
   - `void editar(int posicao, int valor);`  
     Atualiza o valor de um elemento em uma posição específica.  
   - `void imprimir();`  
-    Exibe todos os elementos da lista.  
+    Exibe todos os elementos da lista.
+
+2 commit:
+retirei a função locale pois ela não era útil para o objetivo, que era só entender a lógica...
+otimizei algumas operaçoes(tamanho++, tamanho--) que poderiam ser resumidas
+e cobri mais alguns possiveis casos que poderiam vir a acontecer...
+o proximo passo é tornala duplamente encadeada
